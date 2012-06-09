@@ -13,6 +13,7 @@ def main():
     work_base = os.path.join(base_path, 'work')
     work_path = tempfile.mkdtemp(dir=work_base)
     try:
+        # Copy required files
         os.chdir(work_path)
         rom_path = os.path.join(work_path, 'rom.nds')
         os.symlink(os.path.join(data_path, 'rom.nds'), rom_path)
@@ -27,12 +28,14 @@ def main():
         # Prepare the parties
         with open(os.path.join(data_path, 'porygon-encrypted.bin'), 'rb') as f:
             porygon_encrypted = f.read()
-        for i in range(1, 7):
-            for prefix in ['', 'e']:
-                pkm_path = os.path.join(work_path, 'scripts', '%s%s.pkm' % (prefix, i))
-                with open(pkm_path, 'w') as f:
+
+        for party_path in [os.path.join(work_path, 'scripts', name) for
+                name in ('player.pkms', 'opponent.pkms')]:
+            with open(party_path, 'wb') as f:
+                for pos in range(6):
                     f.write(porygon_encrypted)
 
+        # Run desmume
         env = dict(os.environ)
         env['HOME'] = work_path
         env['XDG_CONFIG_HOME'] = os.path.join(work_path, '.config')
