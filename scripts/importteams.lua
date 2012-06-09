@@ -11,30 +11,26 @@ run the script during the start of a battle animation scene (like mug shot, plaz
 PKMFilePath = {"1.pkm", "2.pkm", "3.pkm", "4.pkm", "5.pkm", "6.pkm"}
 ePKMFilePath = {"e1.pkm", "e2.pkm", "e3.pkm", "e4.pkm", "e5.pkm", "e6.pkm"}
 
-if memory.readword(0x0224FFB8) == 0x7665 or memory.readword(0x0224FFD8) == 0x7665 then
-    if memory.readword(0x0224FFB8) == 0x7665 then
-        Offset = 0x0225D1A8
-        eOffset = 0x0225D708
-    elseif memory.readword(0x0224FFD8) == 0x7665 then
-        Offset = 0x0225D1C8
-        eOffset = 0x0225D728
-    end
+Offset = 0x0225d760
+eOffset = 0x0225dcc0
 
-    for i=1, 6, 1 do
-        PKMFile = assert(io.open(ePKMFilePath[i], "rb"))
-        for j=1, 220, 1 do
-            memory.writebyte(eOffset, string.byte(PKMFile:read(1)))
-            eOffset = eOffset + 1
-        end
-        PKMFile:close()
-    end
+memory.writebyte(0x0225d75c, 3)  -- player party size
+memory.writebyte(0x0225dcbc, 4)  -- opponent party size
 
-    for i=1, 6, 1 do
-        PKMFile = assert(io.open(PKMFilePath[i], "rb"))
-        for j=1, 220, 1 do
-            memory.writebyte(Offset, string.byte(PKMFile:read(1)))
-            Offset = Offset + 1
-        end
-        PKMFile:close()
+for i=1, 3, 1 do
+    PKMFile = assert(io.open(PKMFilePath[i], "rb"))
+    for j=1, 220, 1 do
+        memory.writebyte(Offset, string.byte(PKMFile:read(1)))
+        Offset = Offset + 1
     end
+    PKMFile:close()
+end
+
+for i=1, 4, 1 do
+    PKMFile = assert(io.open(ePKMFilePath[i], "rb"))
+    for j=1, 220, 1 do
+        memory.writebyte(eOffset, string.byte(PKMFile:read(1)))
+        eOffset = eOffset + 1
+    end
+    PKMFile:close()
 end

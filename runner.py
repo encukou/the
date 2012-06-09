@@ -24,11 +24,14 @@ def main():
             os.path.join(desmume_conf_path, 'rom.ds1'))
         shutil.copytree(script_path, os.path.join(work_path, 'scripts'))
 
+        # Prepare the parties
+        with open(os.path.join(data_path, 'porygon-encrypted.bin'), 'rb') as f:
+            porygon_encrypted = f.read()
         for i in range(1, 7):
             for prefix in ['', 'e']:
                 pkm_path = os.path.join(work_path, 'scripts', '%s%s.pkm' % (prefix, i))
                 with open(pkm_path, 'w') as f:
-                    f.write('\0' * 220)
+                    f.write(porygon_encrypted)
 
         env = dict(os.environ)
         env['HOME'] = work_path
